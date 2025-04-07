@@ -1,0 +1,21 @@
+[project]
+name = "trajectory-generation-service"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "preet-dhir-azalea",email = "preet@azalearobotics.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "drake (>=1.39.0,<2.0.0)",
+    "numpy (>=2.2.4,<3.0.0)",
+    "matplotlib (>=3.10.1,<4.0.0)"
+]
+
+[tool.poetry]
+name = "trajectory_generation_service"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

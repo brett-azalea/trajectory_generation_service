@@ -1,0 +1,178 @@
+package lcm_azalea;
+
+struct TrajectoryType {
+    const int32_t CACHED_TRAJECTORY=0;
+    const int32_t CUSTOM_TRAJECTORY=1;
+    int32_t value;
+}
+
+struct RobotType {
+    const int32_t UR = 0;
+    const int32_t NACHI = 1;
+    const int32_t BIMANUAL_UR = 2;
+    int32_t value;
+}
+
+struct TrajectoryStateType {
+    const int32_t JOINT_POSITIONS = 0;
+    const int32_t CARTESIAN_POSE = 1;
+    int32_t value;
+}
+
+struct ControllerStatus {
+    const int32_t IS_ERROR = 0;
+    const int32_t IS_READY = 1;
+    int32_t value;
+}
+
+struct ControllerType {
+    const int32_t JOINT_TRAJECTORY_CONTROLLER = 0;
+    int32_t value;
+}
+
+struct NachiControlPoints {
+    int32_t num_control_points;
+    double control_points[num_control_points][8];
+}
+
+struct UrControlPoints {
+    int32_t num_control_points;
+    double control_points[num_control_points][7];
+}
+
+struct NachiJointAngles {
+    double q[8];
+}
+
+struct UrJointAngles {
+    double q[7];
+}
+
+struct RobotState {
+    RobotType robot_type;
+    
+    NachiRobotState nachi_robot_state_measured;
+    NachiRobotState nachi_robot_state_desired;
+
+    UrRobotState ur_robot_state_measured;
+    UrRobotState ur_robot_state_desired;
+}
+
+struct UrRobotState {
+    UrJointAngles joint_angles;
+    double motor_current[8];
+    boolean emergency_stop;
+    double latency;
+    int32_t message_number;
+}
+
+struct NachiRobotState {
+    NachiJointAngles joint_angles;
+    double motor_current[8];
+    boolean emergency_stop;
+    double latency;
+    int32_t message_number;
+}
+
+struct Pose6d {
+    string reference_frame;
+    string measured_frame;
+    double p_xyz[3]; // Position
+    double q_xyzw[4]; // Rotation as a Quat
+}
+
+struct Twist6d {
+    string frame_expressed_in;
+    double v_xyz[3]; // Linear Velocity
+    double w_xyz[3]; // Angular Velocity
+}
+
+struct TrajectoryState {
+    TrajectoryStateType type;
+    int16_t dof;
+    double joint_positions[dof];
+    Pose6d pose;
+}
+
+struct TrajectoryPlanningRequest {
+    int64_t timestamp;
+    string uuid;
+
+    TrajectoryType trajectory_type;
+    string trajectory_name;
+    TrajectoryState start_state;
+    TrajectoryState goal_state;
+    
+    // trajectory information
+    int16_t num_control_points;
+    int16_t num_knot_points;
+    int8_t spline_order;
+    int32_t num_collision_checking_points;
+    float percentage_of_max_velocity;
+}
+
+struct TrajectoryPlanningResponse {
+    int64_t timestamp;
+    string uuid;
+
+    boolean success;
+    string status;
+    int8_t dof;
+    int8_t spline_order;
+    int32_t control_points_size;
+    int32_t knot_points_size;
+    double control_points[control_points_size][dof];
+    double knot_points[knot_points_size];
+}
+
+struct JointTrajectoryControllerExecutionRequest {
+    int64_t timestamp;
+    string uuid;
+
+    RobotType robot_type;
+    int32_t control_points_size;
+    int32_t spline_order;
+    int32_t knot_points_size;
+    NachiControlPoints nachi_control_points;
+    UrControlPoints ur_control_points;
+    double knot_points[knot_points_size];
+}
+
+struct ControllerResponse {
+    int64_t timestamp;
+    string uuid;
+
+    RobotState robot_state;
+    ControllerStatus status;
+    int32_t controller_type;
+}
+
+
+struct DiffIkExecutionRequest {
+    int64_t timestamp;
+    string uuid;
+
+    RobotType robot_type;
+    Twist6d v_end_effector;
+}
+
+struct VacuumControllerExecutionRequest {
+    int64_t timestamp;
+    string uuid;
+
+    const int16_t TURN_ON = 1;
+    const int16_t TURN_OFF = 0;
+    int16_t action;
+}
+
+struct EKFState {
+    int16_t dimension_size;
+    // position[3], orientation[4], lin_vel[3], angular_vel[3], extents[3]
+    double mean[dimension_size][1];
+    double covariance[dimension_size][dimension_size];
+}
+
+struct PerceptionMessage {
+    int64_t timestamp;
+    EKFState state;
+}

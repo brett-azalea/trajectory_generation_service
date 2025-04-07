@@ -1,0 +1,11 @@
+nachi_demo_1:
+  robot_type: MR50_rail
+  rail_start: -1.325
+  q_start: [0.0, 90.0, 0.0, 0.0, 0.0, -90.0, 0.0]
+  rail_goal: -1.325
+  q_goal: [53.21, 57.69,  0.01, 14.38, 1.07, -72.85, 52.9]
+  control_points: 50
+  collision_checking_points: 200
+  spline_order: 5
+  scene_objects: ["cart"]
+  time_scale: 0.1
