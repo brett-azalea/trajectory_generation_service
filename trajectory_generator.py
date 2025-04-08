@@ -43,8 +43,8 @@ def main():
     # Fixed predefined values in the script:
     # These are 8-dimensional control points.
     first_cp = np.array([-1.3249999999999982, 0.0, 0.0, 0.0, 0.0, 0.0, -1.5707963267948966, 0.0])
-    last_cp  = np.array([-1.3249999999999982, 0.0, 0.0, 0.0, 0.0, 0.0, -0.7854, 0.0])
-    spline_order = 10
+    last_cp  = np.array([-1.3249999999999982, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    spline_order = 5
 
     # Generate control points by linear interpolation and create the knot vector.
     control_points = generate_control_points(num_points, first_cp, last_cp)
