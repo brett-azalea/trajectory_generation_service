@@ -17,7 +17,7 @@ def load_waypoint_from_yaml(filename, waypoint="waypoint_1"):
         raise ValueError(f"Waypoint '{waypoint}' not found in {filename}")
     return data[waypoint]
 
-def publish_joint_trajectory_from_yaml(yaml_filename="cached_trajectory_data.yaml", waypoint="waypoint_0", period_seconds=1.0):
+def publish_joint_trajectory_from_yaml(yaml_filename="trajectory_data.yaml", waypoint="waypoint_0", period_seconds=1.0):
     # Load data from the YAML file for the given waypoint.
     waypoint_data = load_waypoint_from_yaml(yaml_filename, waypoint)
     control_points = waypoint_data.get("control_points", [])
