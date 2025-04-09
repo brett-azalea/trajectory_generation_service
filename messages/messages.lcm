@@ -49,6 +49,7 @@ struct UrJointAngles {
 }
 
 struct RobotState {
+    int64_t robot_time;
     RobotType robot_type;
     
     NachiRobotState nachi_robot_state_measured;
@@ -148,12 +149,19 @@ struct ControllerResponse {
 }
 
 
-struct DiffIkExecutionRequest {
+struct CartesianVelocityControllerExecutionRequest {
     int64_t timestamp;
     string uuid;
 
     RobotType robot_type;
     Twist6d v_end_effector;
+
+    // End conditions
+    boolean should_exit_when_vacuum_sealed;
+    boolean should_failexit_on_zmin;
+    double zmin;
+    boolean should_failexit_on_duration;
+    double max_duration;
 }
 
 struct VacuumControllerExecutionRequest {

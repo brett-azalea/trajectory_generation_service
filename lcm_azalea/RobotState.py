@@ -16,13 +16,14 @@ import lcm_azalea.RobotType
 import lcm_azalea.NachiRobotState
 
 class RobotState(object):
-    __slots__ = ["robot_type", "nachi_robot_state_measured", "nachi_robot_state_desired", "ur_robot_state_measured", "ur_robot_state_desired"]
+    __slots__ = ["robot_time", "robot_type", "nachi_robot_state_measured", "nachi_robot_state_desired", "ur_robot_state_measured", "ur_robot_state_desired"]
 
-    __typenames__ = ["lcm_azalea.RobotType", "lcm_azalea.NachiRobotState", "lcm_azalea.NachiRobotState", "lcm_azalea.UrRobotState", "lcm_azalea.UrRobotState"]
+    __typenames__ = ["int64_t", "lcm_azalea.RobotType", "lcm_azalea.NachiRobotState", "lcm_azalea.NachiRobotState", "lcm_azalea.UrRobotState", "lcm_azalea.UrRobotState"]
 
-    __dimensions__ = [None, None, None, None, None]
+    __dimensions__ = [None, None, None, None, None, None]
 
     def __init__(self):
+        self.robot_time = 0
         self.robot_type = lcm_azalea.RobotType()
         self.nachi_robot_state_measured = lcm_azalea.NachiRobotState()
         self.nachi_robot_state_desired = lcm_azalea.NachiRobotState()
@@ -36,6 +37,7 @@ class RobotState(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
+        buf.write(struct.pack(">q", self.robot_time))
         assert self.robot_type._get_packed_fingerprint() == lcm_azalea.RobotType._get_packed_fingerprint()
         self.robot_type._encode_one(buf)
         assert self.nachi_robot_state_measured._get_packed_fingerprint() == lcm_azalea.NachiRobotState._get_packed_fingerprint()
@@ -59,6 +61,7 @@ class RobotState(object):
 
     def _decode_one(buf):
         self = RobotState()
+        self.robot_time = struct.unpack(">q", buf.read(8))[0]
         self.robot_type = lcm_azalea.RobotType._decode_one(buf)
         self.nachi_robot_state_measured = lcm_azalea.NachiRobotState._decode_one(buf)
         self.nachi_robot_state_desired = lcm_azalea.NachiRobotState._decode_one(buf)
@@ -70,7 +73,7 @@ class RobotState(object):
     def _get_hash_recursive(parents):
         if RobotState in parents: return 0
         newparents = parents + [RobotState]
-        tmphash = (0x8fcfd849bc0363db+ lcm_azalea.RobotType._get_hash_recursive(newparents)+ lcm_azalea.NachiRobotState._get_hash_recursive(newparents)+ lcm_azalea.NachiRobotState._get_hash_recursive(newparents)+ lcm_azalea.UrRobotState._get_hash_recursive(newparents)+ lcm_azalea.UrRobotState._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xb9f4b3d5d20404e2+ lcm_azalea.RobotType._get_hash_recursive(newparents)+ lcm_azalea.NachiRobotState._get_hash_recursive(newparents)+ lcm_azalea.NachiRobotState._get_hash_recursive(newparents)+ lcm_azalea.UrRobotState._get_hash_recursive(newparents)+ lcm_azalea.UrRobotState._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

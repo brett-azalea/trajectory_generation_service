@@ -22,7 +22,7 @@ from .TrajectoryPlanningRequest import TrajectoryPlanningRequest
 from .TrajectoryPlanningResponse import TrajectoryPlanningResponse
 from .JointTrajectoryControllerExecutionRequest import JointTrajectoryControllerExecutionRequest
 from .ControllerResponse import ControllerResponse
-from .DiffIkExecutionRequest import DiffIkExecutionRequest
+from .CartesianVelocityControllerExecutionRequest import CartesianVelocityControllerExecutionRequest
 from .VacuumControllerExecutionRequest import VacuumControllerExecutionRequest
 from .EKFState import EKFState
 from .PerceptionMessage import PerceptionMessage
