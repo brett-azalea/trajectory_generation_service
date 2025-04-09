@@ -10,7 +10,7 @@ from lcm_azalea.NachiControlPoints import NachiControlPoints
 from lcm_azalea.UrControlPoints import UrControlPoints
 from lcm_azalea.RobotType import RobotType  # This contains the proper robot type definitions
 
-def load_waypoint_from_yaml(filename, waypoint="waypoint_1"):
+def load_waypoint_from_yaml(filename, waypoint="waypoint_0"):
     """
     Load a specific waypoint from a YAML file.
     """
