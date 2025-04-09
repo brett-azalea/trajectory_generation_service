@@ -3,9 +3,12 @@
 import yaml
 import time
 from pydrake.lcm import DrakeLcm
+
+# Import the LCM message classes from the updated messages.
 from lcm_azalea.JointTrajectoryControllerExecutionRequest import JointTrajectoryControllerExecutionRequest
 from lcm_azalea.NachiControlPoints import NachiControlPoints
-from lcm_azalea.RobotType import RobotType  # Import the proper RobotType
+from lcm_azalea.UrControlPoints import UrControlPoints
+from lcm_azalea.RobotType import RobotType  # This contains the proper robot type definitions
 
 def load_waypoint_from_yaml(filename, waypoint="waypoint_1"):
     """
@@ -24,7 +27,7 @@ def publish_joint_trajectory_from_yaml(yaml_filename="trajectory_data.yaml", way
     knot_points = waypoint_data.get("knot_points", [])
     spline_order = waypoint_data.get("spline_order", 0)
     
-    # Validate that each control point has 8 dimensions.
+    # Validate that each control point has 8 dimensions (for NACHI robots).
     for cp in control_points:
         if len(cp) != 8:
             raise ValueError(f"Expected each control point to have 8 values but got: {cp}")
@@ -50,26 +53,36 @@ def publish_joint_trajectory_from_yaml(yaml_filename="trajectory_data.yaml", way
     count = 0
     
     try:
-        while count < 1 :
-            # Create a new message for each iteration.
+        # In this example, publish once. Adjust the loop if you need continuous publishing.
+        while count < 1:
+            # Create a new message using the updated LCM message definition.
             msg = JointTrajectoryControllerExecutionRequest()
             msg.timestamp = int(time.time() * 1000)  # Current time in ms.
-            msg.uuid = ""                         # Leave blank.
-            msg.robot_type = RobotType()          # Set a proper instance.
-            msg.control_points_size = control_points_size
+            msg.uuid = ""  # Optionally set this to a unique identifier.
+            
+            # Set the robot type.
+            # Since the control points are 8-dimensional, we assume the robot type is NACHI.
+            robot_type = RobotType()
+            robot_type.value = RobotType.NACHI  # Ensure that the correct constant is used.
+            msg.robot_type = robot_type
+            
+            # Set spline order and knot points size.
             msg.spline_order = spline_order
             msg.knot_points_size = knot_points_size
             
             # Populate the NachiControlPoints sub-message.
             nachi_cp = NachiControlPoints()
             nachi_cp.num_control_points = control_points_size
-            nachi_cp.control_points = control_points  # List of lists.
+            nachi_cp.control_points = control_points  # Expecting a list of lists (each inner list with 8 floats)
             msg.nachi_control_points = nachi_cp
             
-            # Optionally, leave ur_control_points blank:
-            # msg.ur_control_points = <default UrControlPoints instance>
+            # For UR control points, we create a default (empty) message.
+            ur_cp = UrControlPoints()
+            ur_cp.num_control_points = 0
+            ur_cp.control_points = []  # No UR control points provided.
+            msg.ur_control_points = ur_cp
             
-            # Set the knot_points field.
+            # Set the knot points field.
             msg.knot_points = knot_points
             
             # Encode and publish the message.
@@ -78,7 +91,7 @@ def publish_joint_trajectory_from_yaml(yaml_filename="trajectory_data.yaml", way
             
             print(f"Published JointTrajectoryControllerExecutionRequest at timestamp: {msg.timestamp}")
             time.sleep(period_seconds)
-            count+=1
+            count += 1
             
     except KeyboardInterrupt:
         print("\nStopped by user (Ctrl+C)")

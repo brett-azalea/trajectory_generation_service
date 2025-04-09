@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import time
 from pydrake.lcm import DrakeLcm
 from lcm_azalea.CartesianVelocityControllerExecutionRequest import CartesianVelocityControllerExecutionRequest
@@ -18,22 +17,17 @@ def publish_cartesian_velocity_request():
 
     # Set the robot type (using UR, which is 0 according to messages.lcm).
     robot_type = RobotType()
-    robot_type.value = 0                        # 0 corresponds to RobotType.UR.
+    robot_type.value = RobotType.NACHI  # Set the robot type to UR.
     msg.robot_type = robot_type
 
     # Populate the Twist6d for the end-effector velocity.
     twist = Twist6d()
-    twist.frame_expressed_in = "world"          # The reference frame for the twist.
-    twist.v_xyz = [0.0, 0.0, -0.1]               # Linear velocity vector (m/s).
+    twist.v_xyz = [0.0, 0.0, -1.]               # Linear velocity vector (m/s).
     twist.w_xyz = [0.0, 0.0, 0.0]               # Angular velocity vector (rad/s).
     msg.v_end_effector = twist
 
     # Set end condition flags and parameters.
     msg.should_exit_when_vacuum_sealed = True   # Indicates exit if vacuum is sealed.
-    # msg.should_failexit_on_zmin = False          # Do not fail if Z is above minimum.
-    # msg.zmin = 0.1                              # Set the minimum Z threshold.
-    # msg.should_failexit_on_duration = False       # Indicate failure if max duration exceeded.
-    # msg.max_duration = 10.0                      # Maximum duration (seconds).
 
     # Print the velocity command details before publishing.
     print("Publishing CartesianVelocityControllerExecutionRequest with the following command:")

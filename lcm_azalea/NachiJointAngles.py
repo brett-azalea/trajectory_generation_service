@@ -16,6 +16,8 @@ class NachiJointAngles(object):
 
     __dimensions__ = [[8]]
 
+    NACHI_DOF = 8
+
     def __init__(self):
         self.q = [ 0.0 for dim0 in range(8) ]
 

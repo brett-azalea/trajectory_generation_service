@@ -26,3 +26,4 @@ from .CartesianVelocityControllerExecutionRequest import CartesianVelocityContro
 from .VacuumControllerExecutionRequest import VacuumControllerExecutionRequest
 from .EKFState import EKFState
 from .PerceptionMessage import PerceptionMessage
+from .Header import Header

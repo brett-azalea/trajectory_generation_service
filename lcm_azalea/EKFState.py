@@ -9,16 +9,22 @@ except ImportError:
     from io import BytesIO
 import struct
 
+import lcm_azalea.Pose6d
+
+import lcm_azalea.Twist6d
+
 class EKFState(object):
-    __slots__ = ["dimension_size", "mean", "covariance"]
+    __slots__ = ["timestamp", "dimension_size", "pose", "twist", "covariance"]
 
-    __typenames__ = ["int16_t", "double", "double"]
+    __typenames__ = ["int64_t", "int32_t", "lcm_azalea.Pose6d", "lcm_azalea.Twist6d", "double"]
 
-    __dimensions__ = [None, ["dimension_size", 1], ["dimension_size", "dimension_size"]]
+    __dimensions__ = [None, None, None, None, ["dimension_size", "dimension_size"]]
 
     def __init__(self):
+        self.timestamp = 0
         self.dimension_size = 0
-        self.mean = []
+        self.pose = lcm_azalea.Pose6d()
+        self.twist = lcm_azalea.Twist6d()
         self.covariance = []
 
     def encode(self):
@@ -28,9 +34,11 @@ class EKFState(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">h", self.dimension_size))
-        for i0 in range(self.dimension_size):
-            buf.write(struct.pack('>1d', *self.mean[i0][:1]))
+        buf.write(struct.pack(">qi", self.timestamp, self.dimension_size))
+        assert self.pose._get_packed_fingerprint() == lcm_azalea.Pose6d._get_packed_fingerprint()
+        self.pose._encode_one(buf)
+        assert self.twist._get_packed_fingerprint() == lcm_azalea.Twist6d._get_packed_fingerprint()
+        self.twist._encode_one(buf)
         for i0 in range(self.dimension_size):
             buf.write(struct.pack('>%dd' % self.dimension_size, *self.covariance[i0][:self.dimension_size]))
 
@@ -46,10 +54,9 @@ class EKFState(object):
 
     def _decode_one(buf):
         self = EKFState()
-        self.dimension_size = struct.unpack(">h", buf.read(2))[0]
-        self.mean = []
-        for i0 in range(self.dimension_size):
-            self.mean.append(struct.unpack('>1d', buf.read(8)))
+        self.timestamp, self.dimension_size = struct.unpack(">qi", buf.read(12))
+        self.pose = lcm_azalea.Pose6d._decode_one(buf)
+        self.twist = lcm_azalea.Twist6d._decode_one(buf)
         self.covariance = []
         for i0 in range(self.dimension_size):
             self.covariance.append(struct.unpack('>%dd' % self.dimension_size, buf.read(self.dimension_size * 8)))
@@ -58,7 +65,8 @@ class EKFState(object):
 
     def _get_hash_recursive(parents):
         if EKFState in parents: return 0
-        tmphash = (0x215901dbb8a453e1) & 0xffffffffffffffff
+        newparents = parents + [EKFState]
+        tmphash = (0xd74c7b4e521cd0f3+ lcm_azalea.Pose6d._get_hash_recursive(newparents)+ lcm_azalea.Twist6d._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

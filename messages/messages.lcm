@@ -1,5 +1,10 @@
 package lcm_azalea;
 
+struct Header {
+    int64_t timestamp;
+    string uuid;
+}
+
 struct TrajectoryType {
     const int32_t CACHED_TRAJECTORY=0;
     const int32_t CUSTOM_TRAJECTORY=1;
@@ -41,7 +46,8 @@ struct UrControlPoints {
 }
 
 struct NachiJointAngles {
-    double q[8];
+    const int16_t NACHI_DOF = 8;
+    double q[NACHI_DOF];
 }
 
 struct UrJointAngles {
@@ -58,7 +64,6 @@ struct RobotState {
     UrRobotState ur_robot_state_measured;
     UrRobotState ur_robot_state_desired;
 }
-
 struct UrRobotState {
     UrJointAngles joint_angles;
     double motor_current[8];
@@ -68,13 +73,13 @@ struct UrRobotState {
 }
 
 struct NachiRobotState {
+    const int16_t NACHI_DOF = 8;
     NachiJointAngles joint_angles;
-    double motor_current[8];
+    double motor_current[NACHI_DOF];
     boolean emergency_stop;
     double latency;
     int32_t message_number;
 }
-
 struct Pose6d {
     string reference_frame;
     string measured_frame;
@@ -100,16 +105,17 @@ struct TrajectoryPlanningRequest {
     string uuid;
 
     TrajectoryType trajectory_type;
-    string trajectory_name;
     TrajectoryState start_state;
     TrajectoryState goal_state;
     
     // trajectory information
     int16_t num_control_points;
     int16_t num_knot_points;
-    int8_t spline_order;
+    int16_t spline_order;
     int32_t num_collision_checking_points;
     float percentage_of_max_velocity;
+    int32_t seed_id;
+    boolean invert_seed;
 }
 
 struct TrajectoryPlanningResponse {
@@ -118,8 +124,8 @@ struct TrajectoryPlanningResponse {
 
     boolean success;
     string status;
-    int8_t dof;
-    int8_t spline_order;
+    int16_t dof;
+    int16_t spline_order;
     int32_t control_points_size;
     int32_t knot_points_size;
     double control_points[control_points_size][dof];
@@ -131,7 +137,6 @@ struct JointTrajectoryControllerExecutionRequest {
     string uuid;
 
     RobotType robot_type;
-    int32_t control_points_size;
     int32_t spline_order;
     int32_t knot_points_size;
     NachiControlPoints nachi_control_points;
@@ -174,13 +179,9 @@ struct VacuumControllerExecutionRequest {
 }
 
 struct EKFState {
-    int16_t dimension_size;
-    // position[3], orientation[4], lin_vel[3], angular_vel[3], extents[3]
-    double mean[dimension_size][1];
-    double covariance[dimension_size][dimension_size];
-}
-
-struct PerceptionMessage {
     int64_t timestamp;
-    EKFState state;
+    int32_t dimension_size;
+    Pose6d pose;
+    Twist6d twist;
+    double covariance[dimension_size][dimension_size];
 }

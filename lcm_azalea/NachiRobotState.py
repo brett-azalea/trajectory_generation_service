@@ -18,6 +18,8 @@ class NachiRobotState(object):
 
     __dimensions__ = [None, [8], None, None, None]
 
+    NACHI_DOF = 8
+
     def __init__(self):
         self.joint_angles = lcm_azalea.NachiJointAngles()
         self.motor_current = [ 0.0 for dim0 in range(8) ]

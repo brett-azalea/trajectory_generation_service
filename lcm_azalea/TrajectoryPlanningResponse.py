@@ -12,7 +12,7 @@ import struct
 class TrajectoryPlanningResponse(object):
     __slots__ = ["timestamp", "uuid", "success", "status", "dof", "spline_order", "control_points_size", "knot_points_size", "control_points", "knot_points"]
 
-    __typenames__ = ["int64_t", "string", "boolean", "string", "int8_t", "int8_t", "int32_t", "int32_t", "double", "double"]
+    __typenames__ = ["int64_t", "string", "boolean", "string", "int16_t", "int16_t", "int32_t", "int32_t", "double", "double"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None, ["control_points_size", "dof"], ["knot_points_size"]]
 
@@ -45,7 +45,7 @@ class TrajectoryPlanningResponse(object):
         buf.write(struct.pack('>I', len(__status_encoded)+1))
         buf.write(__status_encoded)
         buf.write(b"\0")
-        buf.write(struct.pack(">bbii", self.dof, self.spline_order, self.control_points_size, self.knot_points_size))
+        buf.write(struct.pack(">hhii", self.dof, self.spline_order, self.control_points_size, self.knot_points_size))
         for i0 in range(self.control_points_size):
             buf.write(struct.pack('>%dd' % self.dof, *self.control_points[i0][:self.dof]))
         buf.write(struct.pack('>%dd' % self.knot_points_size, *self.knot_points[:self.knot_points_size]))
@@ -68,7 +68,7 @@ class TrajectoryPlanningResponse(object):
         self.success = bool(struct.unpack('b', buf.read(1))[0])
         __status_len = struct.unpack('>I', buf.read(4))[0]
         self.status = buf.read(__status_len)[:-1].decode('utf-8', 'replace')
-        self.dof, self.spline_order, self.control_points_size, self.knot_points_size = struct.unpack(">bbii", buf.read(10))
+        self.dof, self.spline_order, self.control_points_size, self.knot_points_size = struct.unpack(">hhii", buf.read(12))
         self.control_points = []
         for i0 in range(self.control_points_size):
             self.control_points.append(struct.unpack('>%dd' % self.dof, buf.read(self.dof * 8)))
@@ -78,7 +78,7 @@ class TrajectoryPlanningResponse(object):
 
     def _get_hash_recursive(parents):
         if TrajectoryPlanningResponse in parents: return 0
-        tmphash = (0x9264f9ba2c1b7e7c) & 0xffffffffffffffff
+        tmphash = (0x881b5e75154c560f) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

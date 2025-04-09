@@ -16,17 +16,16 @@ import lcm_azalea.UrControlPoints
 import lcm_azalea.NachiControlPoints
 
 class JointTrajectoryControllerExecutionRequest(object):
-    __slots__ = ["timestamp", "uuid", "robot_type", "control_points_size", "spline_order", "knot_points_size", "nachi_control_points", "ur_control_points", "knot_points"]
+    __slots__ = ["timestamp", "uuid", "robot_type", "spline_order", "knot_points_size", "nachi_control_points", "ur_control_points", "knot_points"]
 
-    __typenames__ = ["int64_t", "string", "lcm_azalea.RobotType", "int32_t", "int32_t", "int32_t", "lcm_azalea.NachiControlPoints", "lcm_azalea.UrControlPoints", "double"]
+    __typenames__ = ["int64_t", "string", "lcm_azalea.RobotType", "int32_t", "int32_t", "lcm_azalea.NachiControlPoints", "lcm_azalea.UrControlPoints", "double"]
 
-    __dimensions__ = [None, None, None, None, None, None, None, None, ["knot_points_size"]]
+    __dimensions__ = [None, None, None, None, None, None, None, ["knot_points_size"]]
 
     def __init__(self):
         self.timestamp = 0
         self.uuid = ""
         self.robot_type = lcm_azalea.RobotType()
-        self.control_points_size = 0
         self.spline_order = 0
         self.knot_points_size = 0
         self.nachi_control_points = lcm_azalea.NachiControlPoints()
@@ -47,7 +46,7 @@ class JointTrajectoryControllerExecutionRequest(object):
         buf.write(b"\0")
         assert self.robot_type._get_packed_fingerprint() == lcm_azalea.RobotType._get_packed_fingerprint()
         self.robot_type._encode_one(buf)
-        buf.write(struct.pack(">iii", self.control_points_size, self.spline_order, self.knot_points_size))
+        buf.write(struct.pack(">ii", self.spline_order, self.knot_points_size))
         assert self.nachi_control_points._get_packed_fingerprint() == lcm_azalea.NachiControlPoints._get_packed_fingerprint()
         self.nachi_control_points._encode_one(buf)
         assert self.ur_control_points._get_packed_fingerprint() == lcm_azalea.UrControlPoints._get_packed_fingerprint()
@@ -70,7 +69,7 @@ class JointTrajectoryControllerExecutionRequest(object):
         __uuid_len = struct.unpack('>I', buf.read(4))[0]
         self.uuid = buf.read(__uuid_len)[:-1].decode('utf-8', 'replace')
         self.robot_type = lcm_azalea.RobotType._decode_one(buf)
-        self.control_points_size, self.spline_order, self.knot_points_size = struct.unpack(">iii", buf.read(12))
+        self.spline_order, self.knot_points_size = struct.unpack(">ii", buf.read(8))
         self.nachi_control_points = lcm_azalea.NachiControlPoints._decode_one(buf)
         self.ur_control_points = lcm_azalea.UrControlPoints._decode_one(buf)
         self.knot_points = struct.unpack('>%dd' % self.knot_points_size, buf.read(self.knot_points_size * 8))
@@ -80,7 +79,7 @@ class JointTrajectoryControllerExecutionRequest(object):
     def _get_hash_recursive(parents):
         if JointTrajectoryControllerExecutionRequest in parents: return 0
         newparents = parents + [JointTrajectoryControllerExecutionRequest]
-        tmphash = (0x65e4f050acd092b4+ lcm_azalea.RobotType._get_hash_recursive(newparents)+ lcm_azalea.NachiControlPoints._get_hash_recursive(newparents)+ lcm_azalea.UrControlPoints._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xe5cf657103bbcdf8+ lcm_azalea.RobotType._get_hash_recursive(newparents)+ lcm_azalea.NachiControlPoints._get_hash_recursive(newparents)+ lcm_azalea.UrControlPoints._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

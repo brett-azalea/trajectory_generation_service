@@ -14,17 +14,16 @@ import lcm_azalea.TrajectoryType
 import lcm_azalea.TrajectoryState
 
 class TrajectoryPlanningRequest(object):
-    __slots__ = ["timestamp", "uuid", "trajectory_type", "trajectory_name", "start_state", "goal_state", "num_control_points", "num_knot_points", "spline_order", "num_collision_checking_points", "percentage_of_max_velocity"]
+    __slots__ = ["timestamp", "uuid", "trajectory_type", "start_state", "goal_state", "num_control_points", "num_knot_points", "spline_order", "num_collision_checking_points", "percentage_of_max_velocity", "seed_id", "invert_seed"]
 
-    __typenames__ = ["int64_t", "string", "lcm_azalea.TrajectoryType", "string", "lcm_azalea.TrajectoryState", "lcm_azalea.TrajectoryState", "int16_t", "int16_t", "int8_t", "int32_t", "float"]
+    __typenames__ = ["int64_t", "string", "lcm_azalea.TrajectoryType", "lcm_azalea.TrajectoryState", "lcm_azalea.TrajectoryState", "int16_t", "int16_t", "int16_t", "int32_t", "float", "int32_t", "boolean"]
 
-    __dimensions__ = [None, None, None, None, None, None, None, None, None, None, None]
+    __dimensions__ = [None, None, None, None, None, None, None, None, None, None, None, None]
 
     def __init__(self):
         self.timestamp = 0
         self.uuid = ""
         self.trajectory_type = lcm_azalea.TrajectoryType()
-        self.trajectory_name = ""
         self.start_state = lcm_azalea.TrajectoryState()
         self.goal_state = lcm_azalea.TrajectoryState()
         self.num_control_points = 0
@@ -32,6 +31,8 @@ class TrajectoryPlanningRequest(object):
         self.spline_order = 0
         self.num_collision_checking_points = 0
         self.percentage_of_max_velocity = 0.0
+        self.seed_id = 0
+        self.invert_seed = False
 
     def encode(self):
         buf = BytesIO()
@@ -47,15 +48,11 @@ class TrajectoryPlanningRequest(object):
         buf.write(b"\0")
         assert self.trajectory_type._get_packed_fingerprint() == lcm_azalea.TrajectoryType._get_packed_fingerprint()
         self.trajectory_type._encode_one(buf)
-        __trajectory_name_encoded = self.trajectory_name.encode('utf-8')
-        buf.write(struct.pack('>I', len(__trajectory_name_encoded)+1))
-        buf.write(__trajectory_name_encoded)
-        buf.write(b"\0")
         assert self.start_state._get_packed_fingerprint() == lcm_azalea.TrajectoryState._get_packed_fingerprint()
         self.start_state._encode_one(buf)
         assert self.goal_state._get_packed_fingerprint() == lcm_azalea.TrajectoryState._get_packed_fingerprint()
         self.goal_state._encode_one(buf)
-        buf.write(struct.pack(">hhbif", self.num_control_points, self.num_knot_points, self.spline_order, self.num_collision_checking_points, self.percentage_of_max_velocity))
+        buf.write(struct.pack(">hhhifib", self.num_control_points, self.num_knot_points, self.spline_order, self.num_collision_checking_points, self.percentage_of_max_velocity, self.seed_id, self.invert_seed))
 
     def decode(data):
         if hasattr(data, 'read'):
@@ -73,18 +70,17 @@ class TrajectoryPlanningRequest(object):
         __uuid_len = struct.unpack('>I', buf.read(4))[0]
         self.uuid = buf.read(__uuid_len)[:-1].decode('utf-8', 'replace')
         self.trajectory_type = lcm_azalea.TrajectoryType._decode_one(buf)
-        __trajectory_name_len = struct.unpack('>I', buf.read(4))[0]
-        self.trajectory_name = buf.read(__trajectory_name_len)[:-1].decode('utf-8', 'replace')
         self.start_state = lcm_azalea.TrajectoryState._decode_one(buf)
         self.goal_state = lcm_azalea.TrajectoryState._decode_one(buf)
-        self.num_control_points, self.num_knot_points, self.spline_order, self.num_collision_checking_points, self.percentage_of_max_velocity = struct.unpack(">hhbif", buf.read(13))
+        self.num_control_points, self.num_knot_points, self.spline_order, self.num_collision_checking_points, self.percentage_of_max_velocity, self.seed_id = struct.unpack(">hhhifi", buf.read(18))
+        self.invert_seed = bool(struct.unpack('b', buf.read(1))[0])
         return self
     _decode_one = staticmethod(_decode_one)
 
     def _get_hash_recursive(parents):
         if TrajectoryPlanningRequest in parents: return 0
         newparents = parents + [TrajectoryPlanningRequest]
-        tmphash = (0xfc608088809328ec+ lcm_azalea.TrajectoryType._get_hash_recursive(newparents)+ lcm_azalea.TrajectoryState._get_hash_recursive(newparents)+ lcm_azalea.TrajectoryState._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x98341f3d26cde7fb+ lcm_azalea.TrajectoryType._get_hash_recursive(newparents)+ lcm_azalea.TrajectoryState._get_hash_recursive(newparents)+ lcm_azalea.TrajectoryState._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)
