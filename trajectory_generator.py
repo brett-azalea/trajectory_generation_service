@@ -43,7 +43,8 @@ def main():
     # Fixed predefined values in the script:
     # These are 8-dimensional control points.
     first_cp = np.array([-1.3249999999999982, 0.0, 0.0, 0.0, 0.0, 0.0, -1.5707963267948966, 0.0])
-    last_cp  = np.array([-1.54, -0.575959,-0.279253,-0.0872665,-0.174533,0.0872665,-1.01229,0.0])
+    last_cp  = np.array([-1.6, -0.767944870877505, -0.3141592653589793, 0.3316125578789213, -0.22689280275926285,
+    -0.17453292519943295, -1.0122909661567112, 0.0])
     spline_order = 5
 
     # Generate control points by linear interpolation and create the knot vector.
@@ -64,7 +65,7 @@ def main():
     yaml_filename = "trajectory_data.yaml"
     with open(yaml_filename, "w") as yf:
         # Set default_flow_style=True to have lists printed inline
-        yaml.dump(trajectory_data, yf, default_flow_style=True, indent=2)
+        yaml.dump(trajectory_data, yf, default_flow_style=False, indent=2)
 
     print(f"Trajectory data has been written to '{yaml_filename}'.")
 
