@@ -16,10 +16,6 @@ def publish_vacuum_controller_request(action_input):
     
     # Create and populate the VacuumControllerExecutionRequest message.
     msg = VacuumControllerExecutionRequest()
-    msg.timestamp = int(time.time() * 1000)  # Current time in milliseconds.
-    msg.uuid = "unique-vacuum-request-id"     # A unique identifier for the request.
-    
-    # Determine the action based on the input
     user_choice = action_input.strip().lower()
     if user_choice in ['on', 'turn on', '1']:
         msg.action = VacuumControllerExecutionRequest.TURN_ON
@@ -54,7 +50,7 @@ if __name__ == "__main__":
     # Start a background thread that waits for the user to press Enter.
     threading.Thread(target=wait_for_exit, args=(stop_flag,), daemon=True).start()
     
-    # Main loop: turn the vacuum on, wait 3 seconds, then turn the vacuum off.
+    # Main loop: turn the vacuum on, wait, then turn the vacuum off.
     while not stop_flag[0]:
         publish_vacuum_controller_request("on")
         time.sleep(5)
