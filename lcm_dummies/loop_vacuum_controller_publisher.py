@@ -53,8 +53,8 @@ if __name__ == "__main__":
     # Main loop: turn the vacuum on, wait, then turn the vacuum off.
     while not stop_flag[0]:
         publish_vacuum_controller_request("on")
-        time.sleep(5)
+        time.sleep(2)
         publish_vacuum_controller_request("off")
-        time.sleep(5)
+        time.sleep(2)
     
     print("Loop stopped. Exiting script.")

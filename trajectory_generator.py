@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 import yaml
+import os
 
 def generate_control_points(n, first_cp, last_cp):
     """
@@ -61,10 +62,16 @@ def main():
         }
     }
 
+    # Determine the output directory relative to the location of this script.
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    output_dir = os.path.join(script_dir, "waypoints")
+    # Create the directory if it doesn't already exist.
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # Write the data to a YAML file.
-    yaml_filename = "trajectory_data.yaml"
+    yaml_filename = os.path.join(output_dir, "trajectory_data_test.yaml")
     with open(yaml_filename, "w") as yf:
-        # Set default_flow_style=True to have lists printed inline
         yaml.dump(trajectory_data, yf, default_flow_style=False, indent=2)
 
     print(f"Trajectory data has been written to '{yaml_filename}'.")

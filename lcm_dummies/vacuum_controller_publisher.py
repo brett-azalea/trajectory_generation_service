@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import time
 from pydrake.lcm import DrakeLcm
 from lcm_azalea.VacuumControllerExecutionRequest import VacuumControllerExecutionRequest
@@ -37,6 +38,14 @@ def publish_vacuum_controller_request(action_input):
     print("Published VacuumControllerExecutionRequest on channel:", channel)
 
 if __name__ == "__main__":
-    # Prompt the user for the desired vacuum action.
-    action_input = input("Enter vacuum action (on/off): ")
-    publish_vacuum_controller_request(action_input)
+    parser = argparse.ArgumentParser(
+        description="Send a Vacuum Controller Execution Request (on/off) via LCM."
+    )
+    parser.add_argument(
+        "action",
+        help="Specify the vacuum action. Acceptable values: 'on', 'turn on', '1', 'off', 'turn off', or '0'.",
+        choices=["on", "turn on", "1", "off", "turn off", "0"]
+    )
+    args = parser.parse_args()
+    
+    publish_vacuum_controller_request(args.action)
